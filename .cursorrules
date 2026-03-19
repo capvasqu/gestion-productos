@@ -1,0 +1,36 @@
+# .cursorrules — gestion-productos
+# Cursor leerá este archivo para entender el contexto y estilo del proyecto.
+
+## Stack tecnológico
+- Backend: Java 17, Spring Boot 3.2, Maven, JPA/Hibernate, MySQL
+- Frontend: React 18, Axios
+- Tests: JUnit 5, Mockito, AssertJ, MockMvc
+- Contenedores: Docker, Docker Compose
+
+## Convenciones Java (Backend)
+- Usar inyección por constructor, nunca @Autowired en campo
+- Todos los métodos públicos del service deben tener Javadoc completo
+- Manejar excepciones con clases custom en el paquete exception/
+- Usar BigDecimal para valores monetarios, nunca double ni float
+- Aplicar borrado lógico (campo activo=false), no deleteById()
+- Validar parámetros de entrada al inicio de cada método de servicio
+- Nombres en español para entidades y métodos de negocio
+
+## Convenciones de tests
+- Un test por comportamiento, no por método
+- Nombres de test en formato: metodo_contexto_resultadoEsperado
+- Siempre usar @DisplayName con descripción en español
+- Mockear solo dependencias externas (repositorios, servicios externos)
+
+## Convenciones React (Frontend)
+- Componentes funcionales con hooks, no clases
+- JSDoc en cada componente documentando sus props
+- Manejar estados: cargando, error, datos
+- Mostrar errores de validación del backend campo por campo
+- Formatear precios con toLocaleString('es-CL', {style:'currency', currency:'CLP'})
+
+## Lo que este proyecto tiene para practicar
+- 8 bugs en ProductoService.java (comentados con BUG #N)
+- 6 bugs en el frontend (productoService.js, App.jsx, componentes)
+- Javadoc incompleto marcado con TODO en varios archivos
+- Tests faltantes marcados con TODO en los archivos de test
