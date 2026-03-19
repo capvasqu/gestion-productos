@@ -1,3 +1,11 @@
+## Sobre este proyecto
+
+Proyecto desarrollado como práctica de automatización con IA.
+Incluye un reporte de bugs generado automáticamente por Claude Code
+en modo agente, analizando el repositorio completo sin intervención manual.
+
+**Herramientas utilizadas:** Claude Code · Cursor · Spring Boot · React · Docker
+
 # Gestión de Productos — Proyecto de práctica para Cursor
 
 Microservicio Spring Boot + Frontend React diseñado para aprender a usar Cursor
