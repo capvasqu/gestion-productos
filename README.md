@@ -63,12 +63,12 @@ graph TB
     end
 
     subgraph Backend["Backend (Spring Boot · puerto 8080)"]
-        Ctrl[ProductoController\n@RestController /api/productos]
-        Serv[ProductoService\n@Service]
-        Repo[ProductoRepository\n@Repository · JPA]
-        Ent[Producto\n@Entity]
-        DTO[ProductoDTO\n@Valid]
-        EX[GlobalExceptionHandler\n@RestControllerAdvice]
+        Ctrl[ProductoController @RestController /api/productos]
+        Serv[ProductoService @Service]
+        Repo[ProductoRepository JPA]
+        Ent[Producto @Entity]
+        DTO[ProductoDTO @Valid]
+        EX[GlobalExceptionHandler]
         Ctrl --> Serv
         Ctrl --> DTO
         Serv --> Repo
@@ -77,8 +77,8 @@ graph TB
     end
 
     subgraph DB["Base de datos"]
-        MySQL[(MySQL 8.0\ngestion_productos)]
-        H2[(H2 in-memory\nperfil test)]
+        MySQL[(MySQL 8.0 gestion_productos)]
+        H2[(H2 in-memory test)]
     end
 
     Svc -- HTTP/JSON --> Nginx
