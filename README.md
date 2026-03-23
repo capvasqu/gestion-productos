@@ -1,5 +1,15 @@
 # Gestión de Productos
 
+## Sobre este proyecto
+
+Proyecto desarrollado como práctica de automatización con IA.
+Incluye un reporte de bugs generado automáticamente por Claude Code
+en modo agente, analizando el repositorio completo sin intervención manual.
+
+**Herramientas utilizadas:** Claude Code · Cursor · Spring Boot · React · Docker
+
+# Gestión de Productos — Proyecto de práctica para Cursor
+
 API REST con Spring Boot 3 y frontend React para la gestión de un catálogo de productos.
 Diseñado como proyecto de práctica con Cursor IDE: incluye bugs intencionales, TODOs y tests incompletos para trabajar con IA asistida.
 
