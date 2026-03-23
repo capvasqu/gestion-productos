@@ -161,31 +161,31 @@ classDiagram
 graph LR
     subgraph com.demo.productos
         direction TB
-        A[GestionProductosApplication\nPunto de entrada @SpringBootApplication]
+        A["GestionProductosApplication - Punto de entrada @SpringBootApplication"]
 
         subgraph controller
-            B[ProductoController\n@RestController\n/api/productos]
+            B["ProductoController @RestController /api/productos"]
         end
 
         subgraph service
-            C[ProductoService\n@Service\nLógica de negocio]
+            C["ProductoService @Service Lógica de negocio"]
         end
 
         subgraph repository
-            D[ProductoRepository\n@Repository\nJpaRepository + queries]
+            D["ProductoRepository @Repository JpaRepository + queries"]
         end
 
         subgraph model
-            E[Producto\n@Entity\nTabla: productos]
+            E["Producto @Entity Tabla: productos"]
         end
 
         subgraph dto
-            F[ProductoDTO\nContrato de entrada\n@Valid]
+            F["ProductoDTO Contrato de entrada @Valid"]
         end
 
         subgraph exception
-            G[ProductoNotFoundException\nRuntimeException]
-            H[GlobalExceptionHandler\n@RestControllerAdvice]
+            G["ProductoNotFoundException RuntimeException"]
+            H["GlobalExceptionHandler @RestControllerAdvice"]
         end
     end
 
