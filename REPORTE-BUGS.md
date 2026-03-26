@@ -1,7 +1,7 @@
-# REPORTE DE BUGS
+# BUG REPORT
 
-Fecha: 2026-03-19
-Total de bugs encontrados: **14**
+Date: 2026-03-19
+Total bugs found: **14**
 
 ---
 
@@ -9,18 +9,18 @@ Total de bugs encontrados: **14**
 
 ---
 
-### BUG #1 — Inyección por campo en lugar de constructor
+### BUG #1 — Field injection instead of constructor injection
 
-**Archivo:** `src/main/java/com/demo/productos/service/ProductoService.java` · línea 23
-**Descripción:** Se usa `@Autowired` sobre el campo directamente. Esto dificulta las pruebas unitarias, oculta las dependencias reales de la clase y puede provocar objetos en estado inválido.
+**File:** `src/main/java/com/demo/productos/service/ProductoService.java` · line 23
+**Description:** `@Autowired` is used directly on the field. This makes unit testing harder, hides the class's real dependencies, and can lead to objects in an invalid state.
 
-**Corrección:**
+**Fix:**
 ```java
-// Eliminar el @Autowired sobre el campo:
+// Remove @Autowired on the field:
 // @Autowired
 // private ProductoRepository productoRepository;
 
-// Agregar campo final y constructor:
+// Add final field and constructor:
 private final ProductoRepository productoRepository;
 
 public ProductoService(ProductoRepository productoRepository) {
@@ -30,34 +30,34 @@ public ProductoService(ProductoRepository productoRepository) {
 
 ---
 
-### BUG #2 — No se valida que `id` no sea `null` ni negativo
+### BUG #2 — `id` is not validated for null or negative values
 
-**Archivo:** `src/main/java/com/demo/productos/service/ProductoService.java` · línea 41
-**Descripción:** El método `obtenerPorId` acepta cualquier valor sin verificación previa. Un `id` nulo lanzará una `NullPointerException` no controlada; un `id` negativo generará una búsqueda sin sentido.
+**File:** `src/main/java/com/demo/productos/service/ProductoService.java` · line 41
+**Description:** The `obtenerPorId` method accepts any value without prior verification. A null `id` will throw an unhandled `NullPointerException`; a negative `id` will produce a meaningless query.
 
-**Corrección:**
+**Fix:**
 ```java
 public Producto obtenerPorId(Long id) {
     if (id == null || id <= 0) {
-        throw new IllegalArgumentException("El id debe ser un número positivo");
+        throw new IllegalArgumentException("The id must be a positive number");
     }
     return productoRepository.findById(id)
-            .orElseThrow(() -> new ProductoNotFoundException("Producto no encontrado con id: " + id));
+            .orElseThrow(() -> new ProductoNotFoundException("Product not found with id: " + id));
 }
 ```
 
 ---
 
-### BUG #3 — No se verifica si ya existe un producto con el mismo nombre
+### BUG #3 — No check for duplicate product name
 
-**Archivo:** `src/main/java/com/demo/productos/service/ProductoService.java` · línea 54
-**Descripción:** Al crear un producto no se comprueba si ya existe otro con el mismo nombre, lo que permite duplicados en la base de datos.
+**File:** `src/main/java/com/demo/productos/service/ProductoService.java` · line 54
+**Description:** When creating a product, no check is performed to see if another product with the same name already exists, allowing duplicates in the database.
 
-**Corrección:**
+**Fix:**
 ```java
 public Producto crear(ProductoDTO dto) {
     if (productoRepository.existsByNombreIgnoreCase(dto.getNombre())) {
-        throw new IllegalArgumentException("Ya existe un producto con el nombre: " + dto.getNombre());
+        throw new IllegalArgumentException("A product with the name already exists: " + dto.getNombre());
     }
     Producto producto = new Producto();
     producto.setNombre(dto.getNombre());
@@ -68,16 +68,16 @@ public Producto crear(ProductoDTO dto) {
     return productoRepository.save(producto);
 }
 ```
-> Agregar en `ProductoRepository`: `boolean existsByNombreIgnoreCase(String nombre);`
+> Add to `ProductoRepository`: `boolean existsByNombreIgnoreCase(String nombre);`
 
 ---
 
-### BUG #4 — Eliminación física en lugar de borrado lógico
+### BUG #4 — Hard delete instead of soft delete
 
-**Archivo:** `src/main/java/com/demo/productos/service/ProductoService.java` · línea 71
-**Descripción:** `deleteById` borra el registro de forma permanente. Si el producto tiene referencias en otras tablas (pedidos, historial), esto puede romper la integridad referencial o eliminar información importante.
+**File:** `src/main/java/com/demo/productos/service/ProductoService.java` · line 71
+**Description:** `deleteById` permanently removes the record. If the product has references in other tables (orders, history), this can break referential integrity or erase important information.
 
-**Corrección:**
+**Fix:**
 ```java
 public void eliminar(Long id) {
     Producto producto = obtenerPorId(id);
@@ -88,29 +88,29 @@ public void eliminar(Long id) {
 
 ---
 
-### BUG #5 — No se valida que el porcentaje de descuento esté entre 0 y 100
+### BUG #5 — Discount percentage not validated between 0 and 100
 
-**Archivo:** `src/main/java/com/demo/productos/service/ProductoService.java` · línea 84
-**Descripción:** Un porcentaje negativo incrementaría el precio; uno mayor a 100 lo pondría en negativo. Ambos corrompen los datos sin ningún aviso.
+**File:** `src/main/java/com/demo/productos/service/ProductoService.java` · line 84
+**Description:** A negative percentage would increase the price; one greater than 100 would make it negative. Both corrupt data with no warning.
 
-**Corrección:**
+**Fix:**
 ```java
 public Producto aplicarDescuento(Long id, double porcentaje) {
     if (porcentaje < 0 || porcentaje > 100) {
-        throw new IllegalArgumentException("El porcentaje debe estar entre 0 y 100");
+        throw new IllegalArgumentException("The percentage must be between 0 and 100");
     }
-    // ... resto del método
+    // ... rest of method
 }
 ```
 
 ---
 
-### BUG #6 — Pérdida de precisión al usar `double` en cálculos monetarios
+### BUG #6 — Precision loss from using `double` in monetary calculations
 
-**Archivo:** `src/main/java/com/demo/productos/service/ProductoService.java` · línea 85
-**Descripción:** Convertir `BigDecimal` a `double` y volver introduce errores de punto flotante que pueden acumular diferencias en precios y afectar facturación.
+**File:** `src/main/java/com/demo/productos/service/ProductoService.java` · line 85
+**Description:** Converting `BigDecimal` to `double` and back introduces floating-point errors that can accumulate price differences and affect billing.
 
-**Corrección:**
+**Fix:**
 ```java
 BigDecimal factor = BigDecimal.ONE.subtract(
     BigDecimal.valueOf(porcentaje).divide(BigDecimal.valueOf(100))
@@ -123,16 +123,16 @@ producto.setPrecio(nuevoPrecio);
 
 ---
 
-### BUG #7 — No se valida que `categoria` no sea `null` ni vacía
+### BUG #7 — `categoria` not validated for null or blank
 
-**Archivo:** `src/main/java/com/demo/productos/service/ProductoService.java` · línea 93
-**Descripción:** Pasar `null` o una cadena vacía como categoría puede lanzar una excepción no controlada o devolver resultados incorrectos.
+**File:** `src/main/java/com/demo/productos/service/ProductoService.java` · line 93
+**Description:** Passing `null` or an empty string as category can throw an unhandled exception or return incorrect results.
 
-**Corrección:**
+**Fix:**
 ```java
 public List<Producto> buscarPorCategoria(String categoria) {
     if (categoria == null || categoria.isBlank()) {
-        throw new IllegalArgumentException("La categoría no puede ser nula ni vacía");
+        throw new IllegalArgumentException("The category cannot be null or blank");
     }
     return productoRepository.findByCategoriaIgnoreCase(categoria);
 }
@@ -140,19 +140,19 @@ public List<Producto> buscarPorCategoria(String categoria) {
 
 ---
 
-### BUG #8 — No se valida que `min <= max` en el rango de precios
+### BUG #8 — Price range not validated for `min <= max`
 
-**Archivo:** `src/main/java/com/demo/productos/service/ProductoService.java` · línea 104
-**Descripción:** Si `min` es mayor que `max`, la consulta devuelve un resultado vacío o incorrecto sin informar al cliente del error en los parámetros.
+**File:** `src/main/java/com/demo/productos/service/ProductoService.java` · line 104
+**Description:** If `min` is greater than `max`, the query returns an empty or incorrect result without informing the client about the invalid parameters.
 
-**Corrección:**
+**Fix:**
 ```java
 public List<Producto> buscarPorRangoPrecio(BigDecimal min, BigDecimal max) {
     if (min == null || max == null) {
-        throw new IllegalArgumentException("Los valores min y max no pueden ser nulos");
+        throw new IllegalArgumentException("The min and max values cannot be null");
     }
     if (min.compareTo(max) > 0) {
-        throw new IllegalArgumentException("El precio mínimo no puede ser mayor que el máximo");
+        throw new IllegalArgumentException("The minimum price cannot be greater than the maximum");
     }
     return productoRepository.findByPrecioEntre(min, max);
 }
@@ -164,17 +164,17 @@ public List<Producto> buscarPorRangoPrecio(BigDecimal min, BigDecimal max) {
 
 ---
 
-### BUG #9 — Método HTTP incorrecto en `eliminar` (GET en lugar de DELETE)
+### BUG #9 — Wrong HTTP method in `eliminar` (GET instead of DELETE)
 
-**Archivo:** `frontend/src/services/productoService.js` · línea 19
-**Descripción:** La función `eliminar` usa `API.get` en vez de `API.delete`, por lo que nunca invoca el endpoint correcto. El producto no se elimina y la petición puede retornar datos inesperados.
+**File:** `frontend/src/services/productoService.js` · line 19
+**Description:** The `eliminar` function uses `API.get` instead of `API.delete`, so it never calls the correct endpoint. The product is not deleted and the request may return unexpected data.
 
-**Corrección:**
+**Fix:**
 ```javascript
-// Antes:
+// Before:
 export const eliminar = (id) => API.get(`/${id}`);
 
-// Después:
+// After:
 export const eliminar = (id) => API.delete(`/${id}`);
 ```
 
@@ -184,19 +184,19 @@ export const eliminar = (id) => API.delete(`/${id}`);
 
 ---
 
-### BUG #10 — Mensaje de error genérico que no muestra el error real del servidor
+### BUG #10 — Generic error message that does not show the actual server error
 
-**Archivo:** `frontend/src/App.jsx` · línea 23
-**Descripción:** Cualquier fallo al cargar productos muestra el mismo texto estático, ocultando la causa real (timeout, 404, 500, etc.) y dificultando el diagnóstico.
+**File:** `frontend/src/App.jsx` · line 23
+**Description:** Any failure when loading products displays the same static text, hiding the real cause (timeout, 404, 500, etc.) and making diagnosis difficult.
 
-**Corrección:**
+**Fix:**
 ```javascript
 } catch (err) {
-    const mensaje =
+    const message =
         err.response?.data?.message ||
         err.message ||
-        'Error desconocido al cargar productos';
-    setError(`Error al cargar productos: ${mensaje}`);
+        'Unknown error loading products';
+    setError(`Error loading products: ${message}`);
 }
 ```
 
@@ -206,38 +206,38 @@ export const eliminar = (id) => API.delete(`/${id}`);
 
 ---
 
-### BUG #11 — No se maneja el caso de lista vacía con mensaje amigable
+### BUG #11 — Empty list not handled with a user-friendly message
 
-**Archivo:** `frontend/src/components/ProductoLista.jsx` · línea 6
-**Descripción:** Cuando `productos` existe pero está vacío (`[]`), la tabla se renderiza sin filas y el usuario ve una tabla en blanco sin entender si hay un problema o simplemente no hay datos.
+**File:** `frontend/src/components/ProductoLista.jsx` · line 6
+**Description:** When `productos` exists but is empty (`[]`), the table renders with no rows and the user sees a blank table without knowing whether there is a problem or simply no data.
 
-**Corrección:**
+**Fix:**
 ```javascript
 function ProductoLista({ productos, onEditar, onEliminar }) {
-    if (!productos) return <p>Cargando...</p>;
-    if (productos.length === 0) return <p>No hay productos registrados.</p>;
-    // ... resto del componente
+    if (!productos) return <p>Loading...</p>;
+    if (productos.length === 0) return <p>No products registered.</p>;
+    // ... rest of component
 }
 ```
 
 ---
 
-### BUG #12 — El precio no se formatea como moneda
+### BUG #12 — Price not formatted as currency
 
-**Archivo:** `frontend/src/components/ProductoLista.jsx` · línea 54
-**Descripción:** El precio se muestra como número crudo (ej. `1500`) en lugar de un valor monetario formateado, lo que reduce la legibilidad y puede causar ambigüedad.
+**File:** `frontend/src/components/ProductoLista.jsx` · line 54
+**Description:** The price is displayed as a raw number (e.g. `1500`) instead of a formatted monetary value, reducing readability and potentially causing ambiguity.
 
-**Corrección:**
+**Fix:**
 ```jsx
-{/* Antes: */}
+{/* Before: */}
 <td style={estiloTd}>{p.precio}</td>
 
-{/* Después: */}
+{/* After: */}
 <td style={estiloTd}>
     {Number(p.precio).toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })}
 </td>
 ```
-> Ajustar el locale y la moneda según el mercado objetivo del proyecto.
+> Adjust the locale and currency to match the project's target market.
 
 ---
 
@@ -245,61 +245,61 @@ function ProductoLista({ productos, onEditar, onEliminar }) {
 
 ---
 
-### BUG #13 — Los errores de campo no se limpian al editarlos
+### BUG #13 — Field errors not cleared when the field is edited
 
-**Archivo:** `frontend/src/components/ProductoFormulario.jsx` · línea 37
-**Descripción:** Cuando el usuario corrige un campo con error y empieza a escribir, el mensaje de error permanece visible hasta el próximo envío del formulario, generando una UX confusa.
+**File:** `frontend/src/components/ProductoFormulario.jsx` · line 37
+**Description:** When the user corrects a field with an error and starts typing, the error message remains visible until the next form submission, creating a confusing UX.
 
-**Corrección:**
+**Fix:**
 ```javascript
 const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
-    // Limpiar el error del campo al editarlo:
+    // Clear the field error when it is edited:
     setErrores(prev => ({ ...prev, [name]: undefined }));
 };
 ```
 
 ---
 
-### BUG #14 — No se muestran los errores de validación devueltos por el backend
+### BUG #14 — Backend validation errors not displayed
 
-**Archivo:** `frontend/src/components/ProductoFormulario.jsx` · línea 71
-**Descripción:** Si el backend devuelve errores de validación por campo (ej. Bean Validation de Spring), todos se ignoran y se muestra un único mensaje genérico. El usuario no sabe qué campo corregir.
+**File:** `frontend/src/components/ProductoFormulario.jsx` · line 71
+**Description:** If the backend returns per-field validation errors (e.g. from Spring Bean Validation), they are all ignored and a single generic message is shown. The user does not know which field to correct.
 
-**Corrección:**
+**Fix:**
 ```javascript
 } catch (err) {
     const backendErrors = err.response?.data?.errors;
     if (backendErrors && typeof backendErrors === 'object') {
         setErrores(backendErrors);
     } else {
-        const mensaje =
+        const message =
             err.response?.data?.message ||
             err.message ||
-            'Error al guardar el producto';
-        setErrores({ general: mensaje });
+            'Error saving the product';
+        setErrores({ general: message });
     }
 }
 ```
 
 ---
 
-## Resumen
+## Summary
 
-| # | Archivo | Descripción breve | Severidad |
-|---|---------|-------------------|-----------|
-| 1 | `ProductoService.java` | Inyección por campo en vez de constructor | Media |
-| 2 | `ProductoService.java` | Sin validación de `id` (null/negativo) | Alta |
-| 3 | `ProductoService.java` | Sin verificación de nombre duplicado | Media |
-| 4 | `ProductoService.java` | Borrado físico en vez de lógico | Alta |
-| 5 | `ProductoService.java` | Sin validación del porcentaje de descuento | Alta |
-| 6 | `ProductoService.java` | Pérdida de precisión con `double` en precios | Alta |
-| 7 | `ProductoService.java` | Sin validación de categoría (null/vacía) | Media |
-| 8 | `ProductoService.java` | Sin validación de rango de precios (min ≤ max) | Media |
-| 9 | `productoService.js` | Método HTTP GET en vez de DELETE | Crítica |
-| 10 | `App.jsx` | Mensaje de error genérico sin detalles | Baja |
-| 11 | `ProductoLista.jsx` | Sin mensaje para lista vacía | Baja |
-| 12 | `ProductoLista.jsx` | Precio sin formato de moneda | Baja |
-| 13 | `ProductoFormulario.jsx` | Errores de campo no se limpian al editar | Media |
-| 14 | `ProductoFormulario.jsx` | Errores de validación del backend ignorados | Media |
+| # | File | Brief description | Severity |
+|---|------|-------------------|----------|
+| 1 | `ProductoService.java` | Field injection instead of constructor | Medium |
+| 2 | `ProductoService.java` | No `id` validation (null/negative) | High |
+| 3 | `ProductoService.java` | No duplicate name check | Medium |
+| 4 | `ProductoService.java` | Hard delete instead of soft delete | High |
+| 5 | `ProductoService.java` | No discount percentage validation | High |
+| 6 | `ProductoService.java` | Precision loss using `double` for prices | High |
+| 7 | `ProductoService.java` | No category validation (null/blank) | Medium |
+| 8 | `ProductoService.java` | No price range validation (min ≤ max) | Medium |
+| 9 | `productoService.js` | HTTP GET instead of DELETE | Critical |
+| 10 | `App.jsx` | Generic error message without details | Low |
+| 11 | `ProductoLista.jsx` | No message for empty list | Low |
+| 12 | `ProductoLista.jsx` | Price not formatted as currency | Low |
+| 13 | `ProductoFormulario.jsx` | Field errors not cleared on edit | Medium |
+| 14 | `ProductoFormulario.jsx` | Backend validation errors ignored | Medium |

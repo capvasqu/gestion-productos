@@ -1,16 +1,16 @@
-# Arquitectura — Gestión de Productos
+# Architecture — Product Management
 
-Este documento describe el diseño interno del proyecto: flujo de una request HTTP, relaciones entre clases y decisiones de diseño encontradas en el código.
+This document describes the internal design of the project: HTTP request flow, class relationships, and design decisions found in the code.
 
 ---
 
-## Flujo completo de una request HTTP
+## Full HTTP request flow
 
-El siguiente diagrama muestra el ciclo de vida de una petición desde el navegador hasta la base de datos y de vuelta, tomando como ejemplo `POST /api/productos`.
+The following diagram shows the lifecycle of a request from the browser to the database and back, using `POST /api/productos` as an example.
 
 ```mermaid
 sequenceDiagram
-    actor Usuario
+    actor User
     participant React as React (App.jsx)
     participant AxiosSvc as productoService.js<br/>(Axios)
     participant Nginx as Nginx<br/>(proxy /api)
@@ -21,36 +21,36 @@ sequenceDiagram
     participant Repo as ProductoRepository
     participant DB as MySQL
 
-    Usuario->>React: Completa formulario y hace clic "Crear"
+    User->>React: Fills in form and clicks "Create"
     React->>AxiosSvc: crear(payload)
     AxiosSvc->>Nginx: POST /api/productos {body: ProductoDTO}
     Nginx->>Ctrl: proxy_pass → POST /api/productos
 
     Ctrl->>Valid: @Valid ProductoDTO
-    alt Validación fallida
+    alt Validation failed
         Valid-->>EH: MethodArgumentNotValidException
-        EH-->>Nginx: 400 {campos: {campo: "mensaje"}}
+        EH-->>Nginx: 400 {fields: {field: "message"}}
         Nginx-->>AxiosSvc: 400
         AxiosSvc-->>React: error (catch)
-        React-->>Usuario: Muestra error de validación
-    else Validación exitosa
-        Valid-->>Ctrl: DTO válido
+        React-->>User: Shows validation error
+    else Validation succeeded
+        Valid-->>Ctrl: Valid DTO
         Ctrl->>Svc: crear(dto)
         Svc->>Repo: save(producto)
         Repo->>DB: INSERT INTO productos (...)
-        DB-->>Repo: producto con id generado
-        Repo-->>Svc: Producto persistido
+        DB-->>Repo: producto with generated id
+        Repo-->>Svc: Persisted Producto
         Svc-->>Ctrl: Producto
         Ctrl-->>Nginx: 201 Created {body: Producto}
         Nginx-->>AxiosSvc: 201
         AxiosSvc-->>React: response.data
-        React-->>Usuario: Lista actualizada
+        React-->>User: Updated list
     end
 ```
 
 ---
 
-## Flujo de excepción — Producto no encontrado
+## Exception flow — Product not found
 
 ```mermaid
 sequenceDiagram
@@ -62,14 +62,14 @@ sequenceDiagram
     Ctrl->>Svc: obtenerPorId(99)
     Svc->>Repo: findById(99)
     Repo-->>Svc: Optional.empty()
-    Svc->>EH: throw ProductoNotFoundException("Producto no encontrado con id: 99")
+    Svc->>EH: throw ProductoNotFoundException("Product not found with id: 99")
     EH-->>Ctrl: ResponseEntity 404
-    Note over EH: {timestamp, status: 404,<br/>error: "No encontrado",<br/>message: "Producto no encontrado con id: 99"}
+    Note over EH: {timestamp, status: 404,<br/>error: "Not Found",<br/>message: "Product not found with id: 99"}
 ```
 
 ---
 
-## Relaciones entre clases
+## Class relationships
 
 ```mermaid
 classDiagram
@@ -140,35 +140,35 @@ classDiagram
         +handleGeneral(Exception) ResponseEntity
     }
 
-    ProductoController --> ProductoService : usa
-    ProductoController ..> ProductoDTO : recibe (@Valid)
-    ProductoController ..> ProductoNotFoundException : interceptada por
-    ProductoService --> ProductoRepository : usa
-    ProductoService ..> ProductoDTO : lee datos de
-    ProductoService ..> Producto : crea/devuelve
-    ProductoService ..> ProductoNotFoundException : lanza
-    ProductoRepository ..> Producto : persiste/consulta
-    GlobalExceptionHandler ..> ProductoNotFoundException : maneja
+    ProductoController --> ProductoService : uses
+    ProductoController ..> ProductoDTO : receives (@Valid)
+    ProductoController ..> ProductoNotFoundException : intercepted by
+    ProductoService --> ProductoRepository : uses
+    ProductoService ..> ProductoDTO : reads data from
+    ProductoService ..> Producto : creates/returns
+    ProductoService ..> ProductoNotFoundException : throws
+    ProductoRepository ..> Producto : persists/queries
+    GlobalExceptionHandler ..> ProductoNotFoundException : handles
     Producto --|> Object : extends (JPA @Entity)
     ProductoRepository --|> JpaRepository : extends
 ```
 
 ---
 
-## Estructura de paquetes y responsabilidades
+## Package structure and responsibilities
 
 ```mermaid
 graph LR
     subgraph com.demo.productos
         direction TB
-        A["GestionProductosApplication - Punto de entrada @SpringBootApplication"]
+        A["GestionProductosApplication - Entry point @SpringBootApplication"]
 
         subgraph controller
             B["ProductoController @RestController /api/productos"]
         end
 
         subgraph service
-            C["ProductoService @Service Lógica de negocio"]
+            C["ProductoService @Service Business logic"]
         end
 
         subgraph repository
@@ -176,11 +176,11 @@ graph LR
         end
 
         subgraph model
-            E["Producto @Entity Tabla: productos"]
+            E["Producto @Entity Table: productos"]
         end
 
         subgraph dto
-            F["ProductoDTO Contrato de entrada @Valid"]
+            F["ProductoDTO Input contract @Valid"]
         end
 
         subgraph exception
@@ -200,54 +200,54 @@ graph LR
 
 ---
 
-## Decisiones de diseño
+## Design decisions
 
-### 1. Separación DTO / Entidad
-El controlador nunca expone la entidad `Producto` directamente en los cuerpos de entrada. En cambio, recibe un `ProductoDTO` validado con `@Valid`. La entidad sí se devuelve como respuesta (sin un DTO de salida separado), lo que simplifica el código pero mezcla levemente las capas de persistencia y transporte.
+### 1. DTO / Entity separation
+The controller never exposes the `Producto` entity directly in request bodies. Instead, it receives a `ProductoDTO` validated with `@Valid`. The entity is returned as the response (without a separate output DTO), which simplifies the code but slightly blurs the persistence and transport layers.
 
-**Implicación**: un cambio en el modelo (agregar un campo interno) podría filtrar datos hacia el cliente si no se agrega un DTO de respuesta.
-
----
-
-### 2. Manejo de errores centralizado
-`GlobalExceptionHandler` con `@RestControllerAdvice` centraliza toda la lógica de formateo de errores. Todos los errores devuelven un objeto JSON consistente con `timestamp`, `status`, `error` y `message`/`campos`, lo que facilita el consumo desde el frontend.
+**Implication**: a model change (adding an internal field) could leak data to the client if a response DTO is not added.
 
 ---
 
-### 3. Perfil de tests con H2
-`application-test.properties` configura H2 en memoria para los tests, sin necesidad de MySQL. El esquema se crea y destruye automáticamente (`ddl-auto=create-drop`), garantizando aislamiento entre suites.
+### 2. Centralized error handling
+`GlobalExceptionHandler` with `@RestControllerAdvice` centralizes all error formatting logic. All errors return a consistent JSON object with `timestamp`, `status`, `error` and `message`/`fields`, making frontend consumption straightforward.
 
 ---
 
-### 4. CORS explícito en el controlador
-`@CrossOrigin(origins = "http://localhost:3000")` está definido directamente en `ProductoController`. En un proyecto real con múltiples controladores, esta configuración debería centralizarse en una clase `WebMvcConfigurer`.
+### 3. H2 test profile
+`application-test.properties` configures an in-memory H2 database for tests, with no MySQL dependency. The schema is created and destroyed automatically (`ddl-auto=create-drop`), guaranteeing isolation between test suites.
+
+---
+
+### 4. Explicit CORS on the controller
+`@CrossOrigin(origins = "http://localhost:3000")` is defined directly on `ProductoController`. In a real project with multiple controllers, this configuration should be centralized in a `WebMvcConfigurer` class.
 
 ---
 
 ### 5. Multi-stage Docker builds
-Tanto el backend como el frontend usan multi-stage builds para minimizar el tamaño de las imágenes finales. El backend compila con Maven y copia solo el JAR a una imagen JRE Alpine. El frontend compila con Node y sirve los estáticos desde Nginx Alpine.
+Both the backend and frontend use multi-stage builds to minimize final image sizes. The backend compiles with Maven and copies only the JAR to a JRE Alpine image. The frontend compiles with Node and serves static files from Nginx Alpine.
 
 ---
 
-### 6. Proxy Nginx como punto de entrada único
-En producción Docker, Nginx actúa como reverse proxy: sirve el frontend en `/` y redirige `/api` al backend. El frontend usa rutas relativas (`/api/productos`) por lo que funciona tanto en desarrollo (proxy de `react-scripts`) como en producción (proxy de Nginx) sin cambiar código.
+### 6. Nginx proxy as single entry point
+In the Docker production setup, Nginx acts as a reverse proxy: it serves the frontend at `/` and forwards `/api` to the backend. The frontend uses relative paths (`/api/productos`) so it works in both development (proxy via `react-scripts`) and production (proxy via Nginx) without any code changes.
 
 ---
 
-### 7. Bugs intencionales como ejercicio pedagógico
-El servicio y el frontend contienen 14 bugs documentados (`// BUG #N`) que cubren anti-patrones reales:
+### 7. Intentional bugs as a teaching exercise
+The service and frontend contain 14 documented bugs (`// BUG #N`) covering real anti-patterns:
 
-| Categoría | Bugs |
-|-----------|------|
-| Inyección de dependencias | #1 — field injection en lugar de constructor |
-| Validación de parámetros | #2, #5, #7, #8 |
-| Lógica de negocio | #3, #4, #6 |
-| HTTP incorrecto en frontend | #9 |
-| UX / manejo de errores | #10, #11, #12, #13, #14 |
+| Category | Bugs |
+|----------|------|
+| Dependency injection | #1 — field injection instead of constructor |
+| Parameter validation | #2, #5, #7, #8 |
+| Business logic | #3, #4, #6 |
+| Incorrect HTTP in frontend | #9 |
+| UX / error handling | #10, #11, #12, #13, #14 |
 
-Los `.cursorrules` del proyecto definen las convenciones correctas para contrastar contra los bugs.
+The project's `.cursorrules` define the correct conventions to contrast against the bugs.
 
 ---
 
-### 8. Convención de nombres en español
-Todos los métodos de negocio, variables y entidades usan nombres en español (`obtenerTodos`, `buscarPorCategoria`, `fechaCreacion`). Los nombres de anotaciones, interfaces de Spring y métodos de test siguen el inglés técnico estándar de Java.
+### 8. Spanish naming convention
+All business methods, variables, and entities use Spanish names (`obtenerTodos`, `buscarPorCategoria`, `fechaCreacion`). Annotation names, Spring interfaces, and test methods follow standard Java technical English.
