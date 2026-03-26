@@ -10,8 +10,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * Entidad que representa un producto en el sistema.
- * Mapeada a la tabla 'productos' en la base de datos.
+ * Entity representing a product in the system.
+ * Mapped to the 'productos' table in the database.
  *
  * @author Carlos
  * @version 1.0
@@ -28,41 +28,41 @@ public class Producto {
     private Long id;
 
     /**
-     * Nombre del producto.
+     * Product name.
      */
-    @NotBlank(message = "El nombre no puede estar vacío")
+    @NotBlank(message = "Name cannot be empty")
     @Size(min = 2, max = 100)
     @Column(nullable = false)
     private String nombre;
 
-    // TODO: agregar Javadoc a este campo
+    // TODO: add Javadoc to this field
     @Size(max = 500)
     private String descripcion;
 
-    // TODO: agregar Javadoc a este campo
-    @NotNull(message = "El precio es obligatorio")
+    // TODO: add Javadoc to this field
+    @NotNull(message = "Price is required")
     @DecimalMin(value = "0.0", inclusive = false)
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal precio;
 
-    // TODO: agregar Javadoc a este campo
+    // TODO: add Javadoc to this field
     @Min(0)
     @Column(nullable = false)
     private Integer stock;
 
     /**
-     * Categoría del producto.
+     * Product category.
      */
     @NotBlank
     private String categoria;
 
-    // TODO: agregar Javadoc a este campo
+    // TODO: add Javadoc to this field
     private Boolean activo;
 
     @Column(name = "fecha_creacion", updatable = false)
     private LocalDateTime fechaCreacion;
 
-    // TODO: agregar Javadoc a este campo
+    // TODO: add Javadoc to this field
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
 

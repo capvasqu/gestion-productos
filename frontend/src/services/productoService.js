@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-// TODO: mover baseURL a variable de entorno (.env)
+// TODO: move baseURL to environment variable (.env)
 const API = axios.create({
   baseURL: '/api/productos',
   headers: { 'Content-Type': 'application/json' },
 });
 
-// TODO: agregar JSDoc a todas las funciones de este módulo
+// TODO: add JSDoc to all functions in this module
 
 export const obtenerTodos = () => API.get('/');
 
@@ -16,7 +16,7 @@ export const crear = (producto) => API.post('/', producto);
 
 export const actualizar = (id, producto) => API.put(`/${id}`, producto);
 
-// BUG #9 (frontend): debería ser DELETE, no GET
+// BUG #9 (frontend): should be DELETE, not GET
 export const eliminar = (id) => API.get(`/${id}`);
 
 export const buscarPorCategoria = (categoria) =>

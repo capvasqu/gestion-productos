@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ProductoController.class)
-@DisplayName("Tests del ProductoController")
+@DisplayName("ProductoController Tests")
 class ProductoControllerTest {
 
     @Autowired
@@ -45,15 +45,15 @@ class ProductoControllerTest {
         productoEjemplo.setNombre("Mouse Logitech");
         productoEjemplo.setPrecio(new BigDecimal("29.99"));
         productoEjemplo.setStock(50);
-        productoEjemplo.setCategoria("Periféricos");
+        productoEjemplo.setCategoria("Peripherals");
         productoEjemplo.setActivo(true);
 
-        dtoEjemplo = new ProductoDTO("Mouse Logitech", "Mouse inalámbrico",
-                new BigDecimal("29.99"), 50, "Periféricos");
+        dtoEjemplo = new ProductoDTO("Mouse Logitech", "Wireless mouse",
+                new BigDecimal("29.99"), 50, "Peripherals");
     }
 
     @Test
-    @DisplayName("GET /productos debe retornar lista con status 200")
+    @DisplayName("GET /productos should return list with status 200")
     void obtenerTodos_debeRetornar200() throws Exception {
         when(productoService.obtenerTodos()).thenReturn(List.of(productoEjemplo));
 
@@ -64,18 +64,18 @@ class ProductoControllerTest {
     }
 
     @Test
-    @DisplayName("GET /productos/{id} debe retornar 404 cuando no existe")
+    @DisplayName("GET /productos/{id} should return 404 when not found")
     void obtenerPorId_cuandoNoExiste_debeRetornar404() throws Exception {
         when(productoService.obtenerPorId(99L))
-                .thenThrow(new ProductoNotFoundException("Producto no encontrado con id: 99"));
+                .thenThrow(new ProductoNotFoundException("Product not found with id: 99"));
 
         mockMvc.perform(get("/productos/99"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Producto no encontrado con id: 99"));
+                .andExpect(jsonPath("$.message").value("Product not found with id: 99"));
     }
 
     @Test
-    @DisplayName("POST /productos debe crear producto y retornar 201")
+    @DisplayName("POST /productos should create product and return 201")
     void crear_conDatosValidos_debeRetornar201() throws Exception {
         when(productoService.crear(any(ProductoDTO.class))).thenReturn(productoEjemplo);
 
@@ -87,7 +87,7 @@ class ProductoControllerTest {
     }
 
     @Test
-    @DisplayName("POST /productos con nombre vacío debe retornar 400")
+    @DisplayName("POST /productos with empty name should return 400")
     void crear_conNombreVacio_debeRetornar400() throws Exception {
         dtoEjemplo.setNombre("");
 
@@ -98,7 +98,7 @@ class ProductoControllerTest {
                 .andExpect(jsonPath("$.campos.nombre").exists());
     }
 
-    // TODO: agregar test para PUT /productos/{id}
-    // TODO: agregar test para DELETE /productos/{id}
-    // TODO: agregar test para PATCH /productos/{id}/descuento con porcentaje inválido
+    // TODO: add test for PUT /productos/{id}
+    // TODO: add test for DELETE /productos/{id}
+    // TODO: add test for PATCH /productos/{id}/descuento with invalid porcentaje
 }

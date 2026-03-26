@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("Tests del ProductoService")
+@DisplayName("ProductoService Tests")
 class ProductoServiceTest {
 
     @Mock
@@ -38,23 +38,23 @@ class ProductoServiceTest {
         productoEjemplo = new Producto();
         productoEjemplo.setId(1L);
         productoEjemplo.setNombre("Laptop Dell");
-        productoEjemplo.setDescripcion("Laptop para desarrollo");
+        productoEjemplo.setDescripcion("Development laptop");
         productoEjemplo.setPrecio(new BigDecimal("999.99"));
         productoEjemplo.setStock(10);
-        productoEjemplo.setCategoria("Electrónica");
+        productoEjemplo.setCategoria("Electronics");
         productoEjemplo.setActivo(true);
 
         dtoEjemplo = new ProductoDTO(
                 "Laptop Dell",
-                "Laptop para desarrollo",
+                "Development laptop",
                 new BigDecimal("999.99"),
                 10,
-                "Electrónica"
+                "Electronics"
         );
     }
 
     @Test
-    @DisplayName("Debe retornar todos los productos")
+    @DisplayName("Should return all products")
     void obtenerTodos_debeRetornarLista() {
         when(productoRepository.findAll()).thenReturn(List.of(productoEjemplo));
 
@@ -66,7 +66,7 @@ class ProductoServiceTest {
     }
 
     @Test
-    @DisplayName("Debe retornar producto cuando existe el ID")
+    @DisplayName("Should return product when ID exists")
     void obtenerPorId_cuandoExiste_debeRetornarProducto() {
         when(productoRepository.findById(1L)).thenReturn(Optional.of(productoEjemplo));
 
@@ -77,7 +77,7 @@ class ProductoServiceTest {
     }
 
     @Test
-    @DisplayName("Debe lanzar excepción cuando el ID no existe")
+    @DisplayName("Should throw exception when ID does not exist")
     void obtenerPorId_cuandoNoExiste_debeLanzarExcepcion() {
         when(productoRepository.findById(99L)).thenReturn(Optional.empty());
 
@@ -87,7 +87,7 @@ class ProductoServiceTest {
     }
 
     @Test
-    @DisplayName("Debe crear y retornar el producto guardado")
+    @DisplayName("Should create and return the saved product")
     void crear_debeGuardarYRetornarProducto() {
         when(productoRepository.save(any(Producto.class))).thenReturn(productoEjemplo);
 
@@ -99,7 +99,7 @@ class ProductoServiceTest {
     }
 
     @Test
-    @DisplayName("Debe aplicar descuento correctamente")
+    @DisplayName("Should apply discount correctly")
     void aplicarDescuento_debeReducirPrecio() {
         when(productoRepository.findById(1L)).thenReturn(Optional.of(productoEjemplo));
         when(productoRepository.save(any(Producto.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -109,8 +109,8 @@ class ProductoServiceTest {
         assertThat(resultado.getPrecio()).isLessThan(new BigDecimal("999.99"));
     }
 
-    // TODO: agregar test para eliminar()
-    // TODO: agregar test para buscarPorCategoria() con categoria null
-    // TODO: agregar test para aplicarDescuento() con porcentaje > 100
-    // TODO: agregar test para buscarPorRangoPrecio() con min > max
+    // TODO: add test for eliminar()
+    // TODO: add test for buscarPorCategoria() with null categoria
+    // TODO: add test for aplicarDescuento() with porcentaje > 100
+    // TODO: add test for buscarPorRangoPrecio() with min > max
 }

@@ -15,7 +15,7 @@
     <artifactId>gestion-productos</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>gestion-productos</name>
-    <description>Microservicio de gestión de productos - Demo para práctica con Cursor</description>
+    <description>Product management microservice - Demo project for Cursor practice</description>
 
     <properties>
         <java.version>17</java.version>

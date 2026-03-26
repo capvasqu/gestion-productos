@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Manejador global de excepciones para la API.
- * Centraliza el manejo de errores y formatea las respuestas de error.
+ * Global exception handler for the API.
+ * Centralizes error handling and formats error responses.
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
         Map<String, Object> error = new HashMap<>();
         error.put("timestamp", LocalDateTime.now());
         error.put("status", 404);
-        error.put("error", "No encontrado");
+        error.put("error", "Not found");
         error.put("message", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
         response.put("status", 400);
-        response.put("error", "Validación fallida");
+        response.put("error", "Validation failed");
         response.put("campos", errores);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
         Map<String, Object> error = new HashMap<>();
         error.put("timestamp", LocalDateTime.now());
         error.put("status", 500);
-        error.put("error", "Error interno del servidor");
+        error.put("error", "Internal server error");
         error.put("message", ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }

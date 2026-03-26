@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { crear, actualizar } from '../services/productoService';
 
-// TODO: agregar JSDoc al componente y sus props
+// TODO: add JSDoc to component and its props
 function ProductoFormulario({ productoEditar, onGuardado, onCancelar }) {
 
   const estadoInicial = {
@@ -34,7 +34,7 @@ function ProductoFormulario({ productoEditar, onGuardado, onCancelar }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
-    // BUG #13: no limpia el error del campo al editarlo
+    // BUG #13: does not clear the field error when the user starts editing
   };
 
   const validar = () => {
@@ -68,7 +68,7 @@ function ProductoFormulario({ productoEditar, onGuardado, onCancelar }) {
       setForm(estadoInicial);
       onGuardado();
     } catch (err) {
-      // BUG #14: no muestra los errores de validación que devuelve el backend
+      // BUG #14: does not display validation errors returned by the backend
       setErrores({ general: 'Error al guardar el producto' });
     } finally {
       setGuardando(false);

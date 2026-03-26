@@ -1,36 +1,36 @@
 # .cursorrules — gestion-productos
-# Cursor leerá este archivo para entender el contexto y estilo del proyecto.
+# Cursor reads this file to understand the project context and coding style.
 
-## Stack tecnológico
+## Tech stack
 - Backend: Java 17, Spring Boot 3.2, Maven, JPA/Hibernate, MySQL
 - Frontend: React 18, Axios
 - Tests: JUnit 5, Mockito, AssertJ, MockMvc
-- Contenedores: Docker, Docker Compose
+- Containers: Docker, Docker Compose
 
-## Convenciones Java (Backend)
-- Usar inyección por constructor, nunca @Autowired en campo
-- Todos los métodos públicos del service deben tener Javadoc completo
-- Manejar excepciones con clases custom en el paquete exception/
-- Usar BigDecimal para valores monetarios, nunca double ni float
-- Aplicar borrado lógico (campo activo=false), no deleteById()
-- Validar parámetros de entrada al inicio de cada método de servicio
-- Nombres en español para entidades y métodos de negocio
+## Java conventions (Backend)
+- Always use constructor injection, never @Autowired on fields
+- All public methods in the service layer must have complete Javadoc
+- Handle exceptions using custom classes in the exception/ package
+- Use BigDecimal for monetary values, never double or float
+- Apply soft delete (activo=false field), not deleteById()
+- Validate input parameters at the beginning of each service method
+- Business entity and method names in Spanish (domain language)
 
-## Convenciones de tests
-- Un test por comportamiento, no por método
-- Nombres de test en formato: metodo_contexto_resultadoEsperado
-- Siempre usar @DisplayName con descripción en español
-- Mockear solo dependencias externas (repositorios, servicios externos)
+## Test conventions
+- One test per behavior, not per method
+- Test name format: method_context_expectedResult
+- Always use @DisplayName with a descriptive label in English
+- Mock only external dependencies (repositories, external services)
 
-## Convenciones React (Frontend)
-- Componentes funcionales con hooks, no clases
-- JSDoc en cada componente documentando sus props
-- Manejar estados: cargando, error, datos
-- Mostrar errores de validación del backend campo por campo
-- Formatear precios con toLocaleString('es-CL', {style:'currency', currency:'CLP'})
+## React conventions (Frontend)
+- Functional components with hooks, no class components
+- JSDoc on each component documenting its props
+- Always handle three states: loading, error, data
+- Show backend validation errors field by field
+- Format prices with toLocaleString('en-US', {style:'currency', currency:'USD'})
 
-## Lo que este proyecto tiene para practicar
-- 8 bugs en ProductoService.java (comentados con BUG #N)
-- 6 bugs en el frontend (productoService.js, App.jsx, componentes)
-- Javadoc incompleto marcado con TODO en varios archivos
-- Tests faltantes marcados con TODO en los archivos de test
+## What this project contains for practice
+- 8 bugs in ProductoService.java (commented as BUG #N)
+- 6 bugs in the frontend (productoService.js, App.jsx, components)
+- Incomplete Javadoc marked with TODO in several files
+- Missing tests marked with TODO in test files

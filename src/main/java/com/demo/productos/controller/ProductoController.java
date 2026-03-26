@@ -12,8 +12,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * Controlador REST para el manejo de productos.
- * Expone endpoints bajo la ruta /api/productos.
+ * REST controller for product management.
+ * Exposes endpoints under the /api/productos route.
  */
 @RestController
 @RequestMapping("/productos")
@@ -27,9 +27,9 @@ public class ProductoController {
     }
 
     /**
-     * Retorna la lista completa de productos.
+     * Returns the full list of products.
      *
-     * @return lista de productos con status 200
+     * @return list of products with status 200
      */
     @GetMapping
     public ResponseEntity<List<Producto>> obtenerTodos() {
@@ -37,49 +37,49 @@ public class ProductoController {
     }
 
     /**
-     * Busca un producto por su ID.
+     * Finds a product by its ID.
      *
-     * @param id identificador del producto
-     * @return producto encontrado con status 200, o 404 si no existe
+     * @param id product identifier
+     * @return found product with status 200, or 404 if not found
      */
     @GetMapping("/{id}")
     public ResponseEntity<Producto> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(productoService.obtenerPorId(id));
     }
 
-    // TODO: agregar Javadoc
+    // TODO: add Javadoc
     @PostMapping
     public ResponseEntity<Producto> crear(@Valid @RequestBody ProductoDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productoService.crear(dto));
     }
 
-    // TODO: agregar Javadoc
+    // TODO: add Javadoc
     @PutMapping("/{id}")
     public ResponseEntity<Producto> actualizar(@PathVariable Long id,
                                                 @Valid @RequestBody ProductoDTO dto) {
         return ResponseEntity.ok(productoService.actualizar(id, dto));
     }
 
-    // TODO: agregar Javadoc
+    // TODO: add Javadoc
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         productoService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
 
-    // TODO: agregar Javadoc
+    // TODO: add Javadoc
     @GetMapping("/categoria/{categoria}")
     public ResponseEntity<List<Producto>> porCategoria(@PathVariable String categoria) {
         return ResponseEntity.ok(productoService.buscarPorCategoria(categoria));
     }
 
-    // TODO: agregar Javadoc
+    // TODO: add Javadoc
     @GetMapping("/disponibles")
     public ResponseEntity<List<Producto>> disponibles() {
         return ResponseEntity.ok(productoService.buscarDisponibles());
     }
 
-    // TODO: agregar Javadoc
+    // TODO: add Javadoc
     @GetMapping("/precio")
     public ResponseEntity<List<Producto>> porRangoPrecio(
             @RequestParam BigDecimal min,
@@ -87,7 +87,7 @@ public class ProductoController {
         return ResponseEntity.ok(productoService.buscarPorRangoPrecio(min, max));
     }
 
-    // TODO: agregar Javadoc
+    // TODO: add Javadoc
     @PatchMapping("/{id}/descuento")
     public ResponseEntity<Producto> aplicarDescuento(
             @PathVariable Long id,

@@ -3,7 +3,7 @@ import ProductoLista from './components/ProductoLista';
 import ProductoFormulario from './components/ProductoFormulario';
 import { obtenerTodos, eliminar } from './services/productoService';
 
-// TODO: agregar JSDoc al componente
+// TODO: add JSDoc to component
 function App() {
   const [productos, setProductos] = useState([]);
   const [productoEditar, setProductoEditar] = useState(null);
@@ -20,7 +20,7 @@ function App() {
       const respuesta = await obtenerTodos();
       setProductos(respuesta.data);
     } catch (err) {
-      // BUG #10: mensaje de error genérico, no muestra el error real del servidor
+      // BUG #10: generic error message, does not show the actual server error
       setError('Error al cargar productos');
     } finally {
       setCargando(false);

@@ -10,35 +10,35 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * Repositorio JPA para la entidad {@link Producto}.
- * Provee operaciones CRUD y consultas personalizadas.
+ * JPA Repository for the {@link Producto} entity.
+ * Provides CRUD operations and custom queries.
  */
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
     /**
-     * Busca productos por categoría (case-insensitive).
+     * Finds products by category (case-insensitive).
      *
-     * @param categoria nombre de la categoría a buscar
-     * @return lista de productos que pertenecen a la categoría
+     * @param categoria category name to search
+     * @return list of products belonging to the category
      */
     List<Producto> findByCategoriaIgnoreCase(String categoria);
 
     /**
-     * Busca productos activos con stock disponible.
+     * Finds active products with available stock.
      */
     List<Producto> findByActivoTrueAndStockGreaterThan(Integer stock);
 
     /**
-     * Busca productos cuyo nombre contiene el texto indicado.
+     * Finds products whose name contains the given text.
      */
     List<Producto> findByNombreContainingIgnoreCase(String nombre);
 
-    // TODO: agregar Javadoc
+    // TODO: add Javadoc
     @Query("SELECT p FROM Producto p WHERE p.precio BETWEEN :min AND :max AND p.activo = true")
     List<Producto> findByPrecioEntre(@Param("min") BigDecimal min, @Param("max") BigDecimal max);
 
-    // TODO: agregar Javadoc
+    // TODO: add Javadoc
     @Query("SELECT COUNT(p) FROM Producto p WHERE p.categoria = :categoria AND p.activo = true")
     Long contarPorCategoria(@Param("categoria") String categoria);
 }

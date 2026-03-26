@@ -1,9 +1,9 @@
 import React from 'react';
 
-// TODO: agregar JSDoc al componente y sus props
+// TODO: add JSDoc to component and its props
 function ProductoLista({ productos, onEditar, onEliminar }) {
 
-  // BUG #11: no maneja el caso de lista vacía con un mensaje amigable
+  // BUG #11: does not handle empty list with a friendly message
   if (!productos) return <p>Cargando...</p>;
 
   const estiloTabla = {
@@ -51,7 +51,7 @@ function ProductoLista({ productos, onEditar, onEliminar }) {
             <td style={estiloTd}>{p.id}</td>
             <td style={estiloTd}>{p.nombre}</td>
             <td style={estiloTd}>{p.categoria}</td>
-            {/* BUG #12: no formatea el precio como moneda */}
+            {/* BUG #12: price is not formatted as currency */}
             <td style={estiloTd}>{p.precio}</td>
             <td style={estiloTd}>{p.stock}</td>
             <td style={estiloTd}>{p.activo ? 'Sí' : 'No'}</td>

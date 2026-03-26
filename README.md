@@ -1,30 +1,40 @@
-# Gestión de Productos — Proyecto de práctica para Cursor
+# Product Management — Practice project for Cursor
 
-Microservicio Spring Boot + Frontend React diseñado para aprender a usar Cursor
-como asistente de desarrollo con IA.
+Spring Boot microservice + React frontend designed to learn how to use Cursor
+as an AI-assisted development tool.
 
 ---
 
-## Estructura del proyecto
+## About this project
+
+Project developed as a practice exercise for AI-driven automation.
+Includes a bug report generated automatically by Claude Code in agent mode,
+analyzing the full repository without manual intervention.
+
+**Tools used:** Claude Code · Cursor · Spring Boot · React · Docker
+
+---
+
+## Project structure
 
 ```
 gestion-productos/
 ├── src/
 │   ├── main/java/com/demo/productos/
 │   │   ├── controller/    ProductoController.java
-│   │   ├── service/       ProductoService.java   ← 8 bugs intencionales
+│   │   ├── service/       ProductoService.java   ← 8 intentional bugs
 │   │   ├── repository/    ProductoRepository.java
 │   │   ├── model/         Producto.java
 │   │   ├── dto/           ProductoDTO.java
 │   │   └── exception/     GlobalExceptionHandler.java
-│   └── test/              Tests con JUnit 5 + casos TODO
+│   └── test/              JUnit 5 tests + TODO cases
 ├── frontend/
 │   └── src/
-│       ├── App.jsx                         ← 2 bugs intencionales
+│       ├── App.jsx                         ← 2 intentional bugs
 │       ├── components/
-│       │   ├── ProductoLista.jsx           ← 2 bugs intencionales
-│       │   └── ProductoFormulario.jsx      ← 2 bugs intencionales
-│       └── services/productoService.js     ← 1 bug intencional
+│       │   ├── ProductoLista.jsx           ← 2 intentional bugs
+│       │   └── ProductoFormulario.jsx      ← 2 intentional bugs
+│       └── services/productoService.js     ← 1 intentional bug
 ├── Dockerfile
 ├── docker-compose.yml
 ├── .cursorrules
@@ -33,36 +43,36 @@ gestion-productos/
 
 ---
 
-## Requisitos previos
+## Prerequisites
 
 - Java 17+
 - Maven 3.8+
 - Node.js 18+
-- Docker y Docker Compose (opcional)
-- MySQL 8.0 (o usar Docker)
+- Docker and Docker Compose (optional)
+- MySQL 8.0 (or use Docker)
 
 ---
 
-## Opción A: Levantar con Docker Compose (recomendado)
+## Option A: Run with Docker Compose (recommended)
 
 ```bash
 docker-compose up --build
 ```
 
 - Frontend: http://localhost:3000
-- API REST: http://localhost:8080/api/productos
+- REST API: http://localhost:8080/api/productos
 
 ---
 
-## Opción B: Levantar manualmente
+## Option B: Run manually
 
-### 1. Base de datos MySQL
+### 1. MySQL database
 
 ```sql
 CREATE DATABASE gestion_productos;
 ```
 
-Actualizar credenciales en:
+Update credentials in:
 `src/main/resources/application.properties`
 
 ### 2. Backend
@@ -82,44 +92,42 @@ npm start
 
 ---
 
-## Endpoints disponibles
+## Available endpoints
 
-| Método | URL                              | Descripción                     |
+| Method | URL                              | Description                     |
 |--------|----------------------------------|---------------------------------|
-| GET    | /api/productos                   | Listar todos                    |
-| GET    | /api/productos/{id}              | Buscar por ID                   |
-| POST   | /api/productos                   | Crear producto                  |
-| PUT    | /api/productos/{id}              | Actualizar producto             |
-| DELETE | /api/productos/{id}              | Eliminar producto               |
-| GET    | /api/productos/categoria/{cat}   | Filtrar por categoría           |
-| GET    | /api/productos/disponibles       | Productos con stock > 0         |
-| GET    | /api/productos/precio?min=&max=  | Filtrar por rango de precio     |
-| PATCH  | /api/productos/{id}/descuento    | Aplicar % de descuento          |
+| GET    | /api/productos                   | List all products                |
+| GET    | /api/productos/{id}              | Find by ID                      |
+| POST   | /api/productos                   | Create product                  |
+| PUT    | /api/productos/{id}              | Update product                  |
+| DELETE | /api/productos/{id}              | Delete product                  |
+| GET    | /api/productos/categoria/{cat}   | Filter by category              |
+| GET    | /api/productos/disponibles       | Products with stock > 0         |
+| GET    | /api/productos/precio?min=&max=  | Filter by price range           |
+| PATCH  | /api/productos/{id}/descuento    | Apply discount percentage       |
 
 ---
 
-## Ejercicios para practicar con Cursor
+## Practice exercises with Cursor
 
-### Ejercicio 1 — Identificar bugs (modo Agent)
-Escribe en el chat de Cursor con modo Agent:
-> "Analiza el proyecto completo y genera un archivo REPORTE-BUGS.md
-> listando todos los comentarios BUG # que encuentres, con archivo,
-> línea, descripción del problema y cómo corregirlo."
+### Exercise 1 — Code review (identify bugs)
+Open `ProductoService.java` in Cursor and type in the chat:
+> "Review this service and identify all quality issues, bugs and bad practices you find"
 
-### Ejercicio 2 — Completar Javadoc
-Abre cualquier archivo con `// TODO: agregar Javadoc` y escribe:
-> "@ProductoService.java Genera el Javadoc completo para todos los
-> métodos y campos que tienen el comentario TODO."
+Documented bugs in the code: BUG #1 to #8 (backend) and BUG #9 to #14 (frontend)
 
-### Ejercicio 3 — Completar tests faltantes
-> "@ProductoServiceTest.java @ProductoService.java Implementa los
-> tests marcados como TODO siguiendo el mismo estilo existente."
+### Exercise 2 — Complete Javadoc
+Open any file with `// TODO: add Javadoc` comments and type:
+> "Generate complete Javadoc for all methods and fields marked with TODO"
 
-### Ejercicio 4 — Corregir bug específico
-> "@ProductoService.java Corrige el BUG #4 y BUG #6. Para el #4
-> implementa borrado lógico con activo=false. Para el #6 usa
-> BigDecimal para el cálculo del descuento."
+### Exercise 3 — Complete tests
+Open `ProductoServiceTest.java` and type:
+> "Implement the tests marked as TODO following the same style as the existing tests"
 
-### Ejercicio 5 — Generar código nuevo
-> "@ProductoRepository.java @ProductoService.java Agrega un método
-> buscarPorNombre() siguiendo el mismo patrón de los métodos existentes."
+### Exercise 4 — Guided refactoring
+Open `ProductoService.java` and type:
+> "Refactor the aplicarDescuento() method to fix bugs #5 and #6 using BigDecimal correctly"
+
+### Exercise 5 — Generate new code
+Type in the Cursor chat:
+> "@ProductoRepository.java @ProductoService.java Add a buscarPorNombre() method that searches products whose name contains the given text, following the same pattern as the existing methods"
