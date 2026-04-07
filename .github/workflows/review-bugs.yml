@@ -1,4 +1,4 @@
-name: Code Review Integral
+name: Review Bugs with Claude Code
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   review:
-    name: Revision integral con Claude Code
+    name: Revision de bugs con Claude Code
     runs-on: ubuntu-latest
 
     permissions:
@@ -28,13 +28,13 @@ jobs:
       - name: Instalar Claude Code
         run: npm install -g @anthropic-ai/claude-code
 
-      - name: Ejecutar revision integral
+      - name: Ejecutar revision de bugs
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
         run: |
           claude -p "$(cat .github/prompts/review-bugs.md)" \
             --allowedTools "Write,Read,Bash" \
-            --output-format text > REPORTE-REVISION-INTEGRAL.md
+            --output-format text > REPORTE-BUGS.md
         continue-on-error: true
 
       - name: Publicar reporte como comentario en el PR
@@ -43,10 +43,10 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            let body = '## Revision Integral de Codigo — Claude Code\n\n';
+            let body = '## Revision de Bugs con Claude Code\n\n';
 
-            if (fs.existsSync('REPORTE-REVISION-INTEGRAL.md')) {
-              const reporte = fs.readFileSync('REPORTE-REVISION-INTEGRAL.md', 'utf8');
+            if (fs.existsSync('REPORTE-BUGS.md')) {
+              const reporte = fs.readFileSync('REPORTE-BUGS.md', 'utf8');
               // Limitar a 65000 caracteres para no exceder el limite de GitHub
               body += reporte.length > 65000
                 ? reporte.substring(0, 65000) + '\n\n_[Reporte truncado — ver artefacto completo]_'
@@ -66,6 +66,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: reporte-revision-integral
-          path: REPORTE-REVISION-INTEGRAL.md
+          name: reporte-bugs
+          path: REPORTE-BUGS.md
           retention-days: 30
